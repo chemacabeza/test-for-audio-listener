@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+
+openai:
+  api-key: test-key
+  model: whisper-1
+  api-url: http://localhost:8089/v1/audio/transcriptions
+  timeout-seconds: 10
+  max-retries: 1
+
+audio:
+  upload-dir: ./test-uploads
+  allowed-types: audio/mpeg,audio/wav,audio/ogg,audio/flac,audio/mp4,audio/webm
+  max-file-size-mb: 25

@@ -1,0 +1,24 @@
+# Secrets
+.env
+.env.local
+
+# Build outputs
+target/
+build/
+dist/
+.next/
+node_modules/
+out/
+*.jar
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Audio uploads (local development)
+uploads/
+**/uploads/
