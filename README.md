@@ -49,20 +49,28 @@ test-audio-listener/
 └── .env.example
 ```
 
-## 🚀 Quick Start (Docker)
+## 🚀 Quick Start (Recommended)
 
-The fastest way to run the entire stack:
+The easiest way to run the entire stack is using the included helper scripts:
 
 ```bash
 # 1. Clone and configure
 cp .env.example .env
 # Edit .env and set your OPENAI_API_KEY
 
-# 2. Start everything
-docker compose up --build
+# 2. Start everything (builds, starts, and opens browser)
+./start.sh
 
-# 3. Open http://localhost:3000
+# 3. Stop everything (preserves data)
+./stop.sh
 ```
+
+### Script Options
+
+| Script | Option | Description |
+|--------|--------|-------------|
+| `./start.sh` | `--no-cache` | Rebuild images from scratch (ignores Docker cache) |
+| `./stop.sh` | `--clean` or `-c` | Stop containers and **remove all volumes** (wipes DB and uploads) |
 
 ## 🛠 Local Development Setup
 
