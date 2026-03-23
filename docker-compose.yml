@@ -16,10 +16,30 @@ services:
       timeout: 5s
       retries: 5
 
+  whisper:
+    build:
+      context: ./backend-whisper
+      dockerfile: Dockerfile
+      network: host
+    container_name: audiolistener-whisper
+    # The models are ~1-2GB, giving Python RAM limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    ports:
+      - "8001:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
     container_name: audiolistener-backend
     ports:
       - "8080:8080"
@@ -29,19 +49,23 @@ services:
       DB_NAME: audiolistener
       DB_USERNAME: audiolistener
       DB_PASSWORD: audiolistener
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      OPENAI_MODEL: ${OPENAI_MODEL:-whisper-1}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-local-offline-key}
+      OPENAI_MODEL: base
+      OPENAI_API_URL: http://whisper:8000/v1/audio/transcriptions
       AUDIO_UPLOAD_DIR: /app/uploads
     volumes:
       - uploads:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
+      whisper:
+        condition: service_healthy
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      network: host
       args:
         NEXT_PUBLIC_API_URL: http://localhost:8080/api
     container_name: audiolistener-frontend

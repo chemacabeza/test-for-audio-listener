@@ -4,6 +4,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw .
+ENV MAVEN_OPTS="-Djava.net.preferIPv4Stack=true"
 RUN chmod +x mvnw && ./mvnw dependency:resolve -q
 
 COPY src ./src
