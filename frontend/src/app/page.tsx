@@ -61,7 +61,7 @@ export default function HomePage() {
   const handleDelete = async (id: number) => {
     try {
       await deleteTranscription(id);
-      setTranscriptions((prev) => prev.filter((t) => t.id !== id));
+      setTranscriptions((prev: TranscriptionResponse[]) => prev.filter((t: TranscriptionResponse) => t.id !== id));
       setSuccessMsg('Transcription deleted');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Delete failed');
@@ -87,6 +87,11 @@ export default function HomePage() {
     <div className="container">
       <header className="hero">
         <h1>🎧 Audio Listener</h1>
+        <img
+          src="/banner.png"
+          alt="Audio Listener Banner"
+          style={{ maxWidth: '100%', height: 'auto', borderRadius: '12px', marginTop: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}
+        />
         <p>Record or upload audio and get instant transcriptions powered by OpenAI Whisper</p>
       </header>
 
