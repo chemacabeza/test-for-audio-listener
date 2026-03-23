@@ -1,6 +1,8 @@
 # 🎧 Audio Listener — Speech-to-Text Transcription
 
-![Audio Listener Banner](./public/banner.png)
+<p align="center">
+  <img src="./public/banner.png" alt="Audio Listener Banner" width="800px">
+</p>
 
 A full-stack application for audio transcription powered by **OpenAI Whisper**. Record audio in the browser or upload files, and get instant transcriptions with history tracking.
 
