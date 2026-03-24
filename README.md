@@ -1,4 +1,4 @@
-# 🎧 Audio Listener — Speech-to-Text Transcription
+# 🎧 x
 
 <p align="center">
   <img src="./public/banner.png" alt="Audio Listener Banner" width="800px">
