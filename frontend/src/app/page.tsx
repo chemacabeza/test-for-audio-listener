@@ -18,6 +18,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isOffline, setIsOffline] = useState(false);
 
   const fetchTranscriptions = useCallback(async (query?: string) => {
     setIsLoading(true);
@@ -48,7 +49,7 @@ export default function HomePage() {
     setSuccessMsg(null);
 
     try {
-      await uploadAudio(file);
+      await uploadAudio(file, isOffline);
       setSuccessMsg('✅ Transcription completed successfully!');
       fetchTranscriptions(searchQuery || undefined);
     } catch (err) {
@@ -111,9 +112,32 @@ export default function HomePage() {
         </div>
       )}
 
-      <div className="input-section">
-        <AudioRecorder onRecordingComplete={handleAudioSubmit} disabled={isUploading} />
-        <FileUpload onFileSelected={handleAudioSubmit} disabled={isUploading} />
+      <div className="input-section" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Toggle Switch */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '1.05rem', fontWeight: 600, color: isOffline ? '#a5b4fc' : '#e2e8f0', transition: '0.3s' }}>
+              {isOffline ? '🔌 Offline Local Model' : '🌐 OpenAI Cloud API'}
+            </span>
+            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
+              {isOffline ? 'Faster-Whisper on Local CPU (Free, Slower)' : 'OpenAI Whisper-1 (Ultra Fast, Very Accurate)'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => setIsOffline(!isOffline)}>
+            <div style={{ position: 'relative', width: '52px', height: '28px', backgroundColor: isOffline ? 'rgba(99,120,255,0.7)' : 'rgba(255,255,255,0.2)', borderRadius: '34px', transition: '0.3s ease' }}>
+              <div style={{ position: 'absolute', top: '4px', left: isOffline ? '28px' : '4px', width: '20px', height: '20px', backgroundColor: 'white', borderRadius: '50%', transition: '0.3s ease', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <AudioRecorder onRecordingComplete={handleAudioSubmit} disabled={isUploading} />
+          </div>
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <FileUpload onFileSelected={handleAudioSubmit} disabled={isUploading} />
+          </div>
+        </div>
       </div>
 
       <section className="history-section">

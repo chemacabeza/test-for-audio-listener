@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,7 +50,7 @@ class TranscriptionControllerTest {
                                 .updatedAt(LocalDateTime.now())
                                 .build();
 
-                when(transcriptionService.transcribeAudio(any())).thenReturn(response);
+                when(transcriptionService.transcribeAudio(any(), anyBoolean())).thenReturn(response);
 
                 MockMultipartFile file = new MockMultipartFile(
                                 "file", "test.wav", "audio/wav", "fake-audio".getBytes());
@@ -104,7 +105,7 @@ class TranscriptionControllerTest {
 
         @Test
         void uploadInvalidRequest_returnsBadRequest() throws Exception {
-                when(transcriptionService.transcribeAudio(any()))
+                when(transcriptionService.transcribeAudio(any(), anyBoolean()))
                                 .thenThrow(new IllegalArgumentException("Unsupported file type"));
 
                 MockMultipartFile file = new MockMultipartFile(

@@ -32,9 +32,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
-export async function uploadAudio(file: File): Promise<TranscriptionResponse> {
+export async function uploadAudio(file: File, offline: boolean = false): Promise<TranscriptionResponse> {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('offline', String(offline));
 
   const response = await fetch(`${API_BASE}/transcriptions`, {
     method: 'POST',

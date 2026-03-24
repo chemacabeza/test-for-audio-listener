@@ -44,25 +44,28 @@ public class OpenAiTranscriptionClient {
      * @return the transcription text returned by OpenAI
      * @throws OpenAiException if the API call fails after retries
      */
-    public String transcribe(File audioFile) throws OpenAiException {
+    public String transcribe(File audioFile, boolean offline) throws OpenAiException {
         int attempts = 0;
         Exception lastException = null;
+        
+        String endpointUrl = offline ? "http://whisper:8000/v1/audio/transcriptions" : "https://api.openai.com/v1/audio/transcriptions";
+        String apiKey = properties.getApiKey();
 
         while (attempts <= properties.getMaxRetries()) {
             try {
                 attempts++;
-                log.info("Sending transcription request to OpenAI (attempt {}/{})",
-                        attempts, properties.getMaxRetries() + 1);
+                log.info("Sending transcription request to {} (attempt {}/{})",
+                        offline ? "Offline Whisper CPU" : "OpenAI Cloud", attempts, properties.getMaxRetries() + 1);
 
                 // Build the multipart request body for the OpenAI transcription endpoint
                 String boundary = UUID.randomUUID().toString();
                 byte[] requestBody = buildMultipartBody(boundary, audioFile);
 
-                // Send the POST request to: https://api.openai.com/v1/audio/transcriptions
+                // Send the POST request to the dynamically selected API endpoint
                 // The API key is passed as a Bearer token in the Authorization header
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(properties.getApiUrl()))
-                        .header("Authorization", "Bearer " + properties.getApiKey())
+                        .uri(URI.create(endpointUrl))
+                        .header("Authorization", "Bearer " + apiKey)
                         .header("Content-Type", "multipart/form-data; boundary=" + boundary)
                         .timeout(Duration.ofSeconds(properties.getTimeoutSeconds()))
                         .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))

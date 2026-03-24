@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,7 +67,7 @@ class TranscriptionServiceTest {
                 .build();
 
         when(repository.save(any(Transcription.class))).thenReturn(saved);
-        when(openAiClient.transcribe(any(File.class))).thenReturn("Hello world transcription");
+        when(openAiClient.transcribe(any(File.class), anyBoolean())).thenReturn("Hello world transcription");
 
         // Update saved to completed
         Transcription completed = Transcription.builder()
@@ -81,13 +82,13 @@ class TranscriptionServiceTest {
         when(repository.save(any(Transcription.class))).thenReturn(completed);
 
         // When
-        TranscriptionResponse response = service.transcribeAudio(file);
+        TranscriptionResponse response = service.transcribeAudio(file, false);
 
         // Then
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(TranscriptionStatus.COMPLETED);
         assertThat(response.getTranscriptText()).isEqualTo("Hello world transcription");
-        verify(openAiClient).transcribe(any(File.class));
+        verify(openAiClient).transcribe(any(File.class), anyBoolean());
         verify(repository, times(2)).save(any(Transcription.class));
     }
 
@@ -106,7 +107,7 @@ class TranscriptionServiceTest {
                 .build();
         when(repository.save(any(Transcription.class))).thenReturn(saved);
 
-        when(openAiClient.transcribe(any(File.class)))
+        when(openAiClient.transcribe(any(File.class), anyBoolean()))
                 .thenThrow(new OpenAiTranscriptionClient.OpenAiException("API error"));
 
         Transcription failed = Transcription.builder()
@@ -120,7 +121,7 @@ class TranscriptionServiceTest {
         when(repository.save(any(Transcription.class))).thenReturn(failed);
 
         // When
-        TranscriptionResponse response = service.transcribeAudio(file);
+        TranscriptionResponse response = service.transcribeAudio(file, false);
 
         // Then
         assertThat(response.getStatus()).isEqualTo(TranscriptionStatus.FAILED);
@@ -132,7 +133,7 @@ class TranscriptionServiceTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.txt", "text/plain", "not audio".getBytes());
 
-        assertThatThrownBy(() -> service.transcribeAudio(file))
+        assertThatThrownBy(() -> service.transcribeAudio(file, false))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Unsupported file type");
     }
@@ -142,7 +143,7 @@ class TranscriptionServiceTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.wav", "audio/wav", new byte[0]);
 
-        assertThatThrownBy(() -> service.transcribeAudio(file))
+        assertThatThrownBy(() -> service.transcribeAudio(file, false))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("empty");
     }

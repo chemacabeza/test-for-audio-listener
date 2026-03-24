@@ -36,7 +36,7 @@ public class TranscriptionService {
      * Upload an audio file, store it, and trigger transcription via OpenAI.
      */
     @Transactional
-    public TranscriptionResponse transcribeAudio(MultipartFile file) {
+    public TranscriptionResponse transcribeAudio(MultipartFile file, boolean offline) {
         // 1. Validate the uploaded file
         validateFile(file);
 
@@ -63,10 +63,10 @@ public class TranscriptionService {
         transcription.setFilename(newFilename);
         transcription = repository.save(transcription);
 
-        // 5. Call OpenAI for transcription
+        // 5. Call API for transcription
         try {
             File audioFile = new File(mp3Path);
-            String transcriptText = openAiClient.transcribe(audioFile);
+            String transcriptText = openAiClient.transcribe(audioFile, offline);
 
             transcription.setTranscriptText(transcriptText);
             transcription.setStatus(TranscriptionStatus.COMPLETED);

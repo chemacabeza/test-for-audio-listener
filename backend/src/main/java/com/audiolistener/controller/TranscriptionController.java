@@ -30,10 +30,11 @@ public class TranscriptionController {
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TranscriptionResponse> uploadAndTranscribe(
-            @RequestParam("file") MultipartFile file) {
-        log.info("Received audio upload: name={}, size={} bytes, type={}",
-                file.getOriginalFilename(), file.getSize(), file.getContentType());
-        TranscriptionResponse response = transcriptionService.transcribeAudio(file);
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "offline", defaultValue = "false") boolean offline) {
+        log.info("Received audio upload: name={}, size={} bytes, type={}, offline={}",
+                file.getOriginalFilename(), file.getSize(), file.getContentType(), offline);
+        TranscriptionResponse response = transcriptionService.transcribeAudio(file, offline);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

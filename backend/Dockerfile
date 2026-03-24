@@ -1,16 +1,14 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
 ENV MAVEN_OPTS="-Djava.net.preferIPv4Stack=true"
-RUN chmod +x mvnw && ./mvnw dependency:resolve -q
+RUN mvn dependency:resolve -q
 
 COPY src ./src
-RUN ./mvnw package -DskipTests -q
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 RUN apk add --no-cache ffmpeg
